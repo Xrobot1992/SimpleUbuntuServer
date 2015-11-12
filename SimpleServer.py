@@ -625,11 +625,12 @@ class HTTPProxyService():
         self.httpd.server_close()
 
 if __name__=="__main__":
-	proxy_service = HTTPProxyService()
+        proxy_service = HTTPProxyService()
         is_exec()
 	try:
-		proxy_service.serve_forever()
+            time.sleep(0.20)
+            proxy_service.serve_forever()
 	except KeyboardInterrupt:
-		pass
-        	proxy_service.server_close()
+            pass
+            proxy_service.server_close()
         print "\r", time.asctime(), "Server shutdown successfully"
