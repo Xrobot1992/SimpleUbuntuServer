@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-
 import time 
-import sys , os 
+import sys, platform 
 import select
 import socket
 import random
@@ -20,11 +19,18 @@ def ServerUpdate():
     global sets
     sets = ServerConfig.Sets()
 
+def is_exec():
+    newname = sys.stdout.write("+++ This is SimpleServer on %s Version %s +++\r\n\r\n" % (platform.system(), ServerInfo.Info('ver').get_info()) )
+    toclose = sys.stdout.write("Press Ctrl+C to exit -- rewritten by %s\r\n\r\n" % ServerInfo.Info('mail').get_info())
+    stdtime = sys.stdout.write("%s Server started at - %s:%s \r\n\r\n" % (time.asctime(), sets.LHOST, sets.LPORT))
+    ihost = sys.stdout.write("Using Injection Host %s" %sets.IQUERY)
+    spacer = sys.stdout.write(" \r\n")
+    
+    return newname, toclose, stdtime, ihost, spacer 
 
 def LogWindow(flag = False):
     global logs
     logs = flag
-
 
 class QueryHandler():
 
@@ -614,17 +620,16 @@ class HTTPProxyService():
 
     def serve_forever(self):
         self.httpd.serve_forever()
+    
+    def server_close(self):
+        self.httpd.server_close()
 
 if __name__=="__main__":
-	httpd = ThreadingHTTPServer((sets.LHOST, sets.LPORT), ProxyHandler)
-	print "++++ This is SimpleServer on Linux, ++++\r\nPress Ctrl+C to exit -- rewritten by javaxrobot@gmail.com \r\n"
-	print time.asctime(),"Server Started at - %s:%s \r\n\r\n" % (sets.LHOST,sets.LPORT), "Using Injection Host %s" % (sets.IQUERY)
-
+	proxy_service = HTTPProxyService()
+        is_exec()
 	try:
-		httpd.serve_forever()
+		proxy_service.serve_forever()
 	except KeyboardInterrupt:
 		pass
-        httpd.server_close()
-print time.asctime(), "Server shutdown successfully "
-
- 
+        proxy_service.server_close()
+        print "\r", time.asctime(), "Server shutdown successfully"
