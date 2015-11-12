@@ -13,9 +13,9 @@ class Info:
         if self.get.lower() == 'about':
             return 'Linux Version'
         if self.get.lower() == 'ver':
-            return '1.00.05'
+            return '1.09.05'
         if self.get.lower() == 'date':
-            return '19/06/2015'
+            return '19/10/2015'
         if self.get.lower() == 'by':
             return 'Xrobot'
         if self.get.lower() == 'mail':
