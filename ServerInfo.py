@@ -13,7 +13,7 @@ class Info:
         if self.get.lower() == 'about':
             return 'Linux Version'
         if self.get.lower() == 'ver':
-            return '1.09.05'
+            return '1.19.05'
         if self.get.lower() == 'date':
             return '19/10/2015'
         if self.get.lower() == 'by':
