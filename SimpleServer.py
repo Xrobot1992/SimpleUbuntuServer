@@ -1,26 +1,26 @@
 #!/usr/bin/python
 
-import time 
-import sys, platform 
+import BaseHTTPServer
+import platform, random
 import select
-import socket
-import random
-import urlparse
+import socket, sys
 import ServerInfo
 import ServerConfig
 import ServerSocks
 import SocketServer
-import BaseHTTPServer
+import time 
+import urlparse
+
 ra = lambda text: text.decode('ascii', 'ignore')
 sets = ServerConfig.Sets()
-logs = True
+logs = False
 
 def ServerUpdate():
     global sets
     sets = ServerConfig.Sets()
 
-def is_exec():
-    newname = sys.stdout.write("+++ This is SimpleServer on %s Version %s +++\r\n\r\n" % (platform.system(), ServerInfo.Info('ver').get_info()) )
+def IsExec():
+    newname = sys.stdout.write("+++ This is SimpleServer on %s Version %s +++\r\n\r\n" % (platform.system(), ServerInfo.Info('ver').get_info()[:4]) )
     toclose = sys.stdout.write("Press Ctrl+C to exit -- rewritten by %s\r\n\r\n" % ServerInfo.Info('mail').get_info())
     stdtime = sys.stdout.write("%s Server started at - %s:%s \r\n\r\n" % (time.asctime(), sets.LHOST, sets.LPORT))
     ihost = sys.stdout.write("Using Injection Host %s" %sets.IQUERY)
@@ -623,14 +623,13 @@ class HTTPProxyService():
     
     def server_close(self):
         self.httpd.server_close()
-
-if __name__=="__main__":
+    
+if __name__ == "__main__":
         proxy_service = HTTPProxyService()
-        is_exec()
+        LogWindow(flag = True)
+        IsExec()
 	try:
-            time.sleep(0.20)
             proxy_service.serve_forever()
 	except KeyboardInterrupt:
-            pass
             proxy_service.server_close()
         print "\r", time.asctime(), "Server shutdown successfully"
