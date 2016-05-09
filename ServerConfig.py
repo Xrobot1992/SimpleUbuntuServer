@@ -33,6 +33,7 @@ class Sets:
         self.VALHDR3 = ''
         self.KEEP = ''
         self.RHTTP = 0
+        self.LOGS = 1
         self.RHTTPS = 1
         self.SBUFF = 1024
         self.TIMEOUT = 60
