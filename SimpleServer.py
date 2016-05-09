@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#! /usr/bin/python
 
 import BaseHTTPServer
 import platform, random
 import select
 import socket, sys
 import ServerInfo
-import ServerConfig
+import ServerConfig, ServerPinger
 import ServerSocks
 import SocketServer
 import time 
@@ -18,6 +18,10 @@ logs = False
 def ServerUpdate():
     global sets
     sets = ServerConfig.Sets()
+    
+def LogWindow(flag = False):
+    global logs
+    logs = flag
 
 def IsExec():
     newname = sys.stdout.write("+++ This is SimpleServer on %s Version %s +++\r\n\r\n" % (platform.system(), ServerInfo.Info('ver').get_info()[:4]) )
@@ -25,12 +29,16 @@ def IsExec():
     stdtime = sys.stdout.write("%s Server started at - %s:%s \r\n\r\n" % (time.asctime(), sets.LHOST, sets.LPORT))
     ihost = sys.stdout.write("Using Injection Host %s" %sets.IQUERY)
     spacer = sys.stdout.write(" \r\n")
-    
+    if sets.LOGS == 0:
+        LogWindow(flag = False)
+        print "\r\nQuiet Mode: Logging Disabled"
+    elif sets.LOGS == 1:
+        LogWindow(flag = True)
+        print "\r\nLogging Enabled"
+    else:
+        print "\r\nNo or Invalid value for LOGS, set 0 or 1, will use default"
+        
     return newname, toclose, stdtime, ihost, spacer 
-
-def LogWindow(flag = False):
-    global logs
-    logs = flag
 
 class QueryHandler():
 
@@ -625,11 +633,11 @@ class HTTPProxyService():
         self.httpd.server_close()
     
 if __name__ == "__main__":
-        proxy_service = HTTPProxyService()
-        LogWindow(flag = True)
-        IsExec()
-	try:
-            proxy_service.serve_forever()
-	except KeyboardInterrupt:
-            proxy_service.server_close()
+    proxy_service = HTTPProxyService()
+    IsExec()
+    try:
+        ServerPinger.Pinger().check()
+        proxy_service.serve_forever()
+    except KeyboardInterrupt:
+        proxy_service.server_close()
         print "\r", time.asctime(), "Server shutdown successfully"
