@@ -1,16 +1,18 @@
-#! /usr/bin/python
-
+#!/usr/bin/python
 import BaseHTTPServer
 import platform, random
 import select
 import socket, sys
+import ServerPinger
 import ServerInfo
-import ServerConfig, ServerPinger
+import ServerConfig
 import ServerSocks
 import SocketServer
 import time 
 import urlparse
+from adblockparser import AdblockRules
 
+rules = AdblockRules([''])
 ra = lambda text: text.decode('ascii', 'ignore')
 sets = ServerConfig.Sets()
 logs = False
@@ -18,27 +20,40 @@ logs = False
 def ServerUpdate():
     global sets
     sets = ServerConfig.Sets()
+
+
+def IsExec():
+    newname = sys.stdout.write("+++ This is %s on %s Version %s +++\r\n\r\n" % (ServerInfo.Info('name').get_info().replace(' ', ''), platform.system(), ServerInfo.Info('ver').get_info()[:4]) )
+    toclose = sys.stdout.write("Press Ctrl+C to exit -- rewritten by %s\r\n\r\n" % ServerInfo.Info('mail').get_info())
+    stdtime = sys.stdout.write("%s Server started at - %s:%s \r\n\r\n" % (time.asctime(), sets.LHOST, sets.LPORT))
+    ihost = sys.stdout.write("Using Injection Host %s \r\n" %sets.IQUERY)
+    spacer = sys.stdout.write("\r\n")
+    if sets.LOGS == 0:
+        LogWindow(flag = False)
+        print "Quiet Mode, Logging Disabled\r\n"
+    elif sets.LOGS == 1:
+        LogWindow(flag = True)
+        print "Logging enabled\r\n"
     
+    return newname, toclose, stdtime, ihost, spacer 
+    
+def UrlBlock():
+    global rules
+    if sets.ADBLOCKER == 1:
+        rules = AdblockRules(file('hosts3.txt'))
+        
+        sys.stdout.write("Adblocking is ON\r\n")
+    elif sets.ADBLOCKER == 0:
+        rules = AdblockRules([])
+        sys.stdout.write("Adblocking is OFF\r\n")
+    else:
+        print "Invalid value for Blocking, try 0 or 1, will use 0"
+        sets.ADBLOCKER == 0
+
+
 def LogWindow(flag = False):
     global logs
     logs = flag
-
-def IsExec():
-    newname = sys.stdout.write("+++ This is SimpleServer on %s Version %s +++\r\n\r\n" % (platform.system(), ServerInfo.Info('ver').get_info()[:4]) )
-    toclose = sys.stdout.write("Press Ctrl+C to exit -- rewritten by %s\r\n\r\n" % ServerInfo.Info('mail').get_info())
-    stdtime = sys.stdout.write("%s Server started at - %s:%s \r\n\r\n" % (time.asctime(), sets.LHOST, sets.LPORT))
-    ihost = sys.stdout.write("Using Injection Host %s" %sets.IQUERY)
-    spacer = sys.stdout.write(" \r\n")
-    if sets.LOGS == 0:
-        LogWindow(flag = False)
-        print "\r\nQuiet Mode: Logging Disabled"
-    elif sets.LOGS == 1:
-        LogWindow(flag = True)
-        print "\r\nLogging Enabled"
-    else:
-        print "\r\nNo or Invalid value for LOGS, set 0 or 1, will use default"
-        
-    return newname, toclose, stdtime, ihost, spacer 
 
 class QueryHandler():
 
@@ -51,12 +66,19 @@ class QueryHandler():
         self.pport = pport
 
     def get_path(self, path):
+        no_path = None
         if '/' in path:
             host, path = path.split('/', 1)
             path = '/%s' % path
         else:
             host = path
             path = '/'
+            
+        if rules.should_block(host) == True:
+            host, path = '%s' % no_path
+        else:
+            pass
+            
         fport = False
         if self.https:
             port = 443
@@ -321,7 +343,7 @@ class ProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             soc = self.proxy_sock()
             try:
                 if self.connect_to(soc, self.host, self.port, self.advhost):
-                    data = '%s 200 Connection Established\r\nProxy-Agent: %s/%s' % (self.request_version, ServerInfo.Info('name').get_info().replace(' ', ''), ServerInfo.Info('ver').get_info()[:3])
+                    data = '%s 200 Connection Established\r\nProxy-Agent: %s/%s' % (self.request_version, ServerInfo.Info('name').get_info().replace(' ', ''), ServerInfo.Info('ver').get_info()[:4])
                     self.send_response_data('%s\r\n' % data)
                     self.send_response_data('\r\n')
                     self.get_response_header(data)
@@ -453,7 +475,7 @@ class ProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return '%s%s' % (self.injectline, self.requestline)
         else:
             return self.requestline
-
+            
     def get_send_end(self):
         if sets.IQUERY:
             return self.newline
@@ -576,7 +598,7 @@ class ProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def send_response_data(self, data):
         self.wfile.write(data)
-
+            
     def send_connection_close(self, soc):
         soc.close()
         self.connection.close()
@@ -631,10 +653,10 @@ class HTTPProxyService():
     
     def server_close(self):
         self.httpd.server_close()
-    
+        
 if __name__ == "__main__":
     proxy_service = HTTPProxyService()
-    IsExec()
+    IsExec(), UrlBlock()
     try:
         ServerPinger.Pinger().check()
         proxy_service.serve_forever()
