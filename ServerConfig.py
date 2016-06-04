@@ -5,7 +5,7 @@ ur = lambda text: text.encode('utf-8', 'ignore')
 name = '%s.conf' % ServerInfo.Info('name').get_info().replace(' ', '')
 path = '/'
 conf = '%s%s%s' % (os.getcwd(), path, name)
-## credits to InunxLabs for his first codes :: 
+
 class Sets:
 
     def __init__(self):
@@ -16,7 +16,8 @@ class Sets:
         self.BQUERY = ''
         self.RQUERY = ''
         self.CQUERY = ''
-        self.IQUERY = 'start.ubuntu.com'
+        self.IQUERY = ''
+        self.ADBLOCKER = 1
         self.IMETHOD = 1
         self.ILINE = 0
         self.ISPLIT = 5
@@ -33,13 +34,13 @@ class Sets:
         self.VALHDR3 = ''
         self.KEEP = ''
         self.RHTTP = 0
-        self.LOGS = 1
         self.RHTTPS = 1
         self.SBUFF = 1024
         self.TIMEOUT = 60
-        self.PHOST = '10.199.212.2'
-        self.PPORT = 8080
+        self.PHOST = ''
+        self.PPORT = 0
         self.PTYPE = 0
+        self.LOGS = 1
         self.load()
 
     def load(self):
