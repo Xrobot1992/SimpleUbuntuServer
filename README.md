@@ -29,3 +29,6 @@ It is best to keep it anywhere in your home directory and copy it to /etc/apt/
 each time you use SimpleServer.
 
 Happy tweaking :-0
+
+Optional Adblocker added to block malicious advertizing encountered on Android reported by users.
+See 	README1.md for more.
