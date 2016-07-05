@@ -23,7 +23,7 @@ ISPLIT => Injection Splitline
 RPORT => Remove Port from urls: 1 --> enable, 0 --> disable
 RPATH => Remove paths: 1 --> enable, 0 --> disable
 ADMODE => Advanced mode, 1 --> enable, 0 --> disable, Default:1
-LOGS => Logging to console/terminal 1 --> enable, 0 --> disable, use for debugging.
+LOGS => Logging to console/terminal 1 --> enable, 0 --> disable, 2 --> log to file, use for debugging.
 ADBLOCKER => Host-like blocking of url requests received, 1 --> enable, 0 --> disable.
 
 CUSHDRx => Custom Headers, use if you know what is.
