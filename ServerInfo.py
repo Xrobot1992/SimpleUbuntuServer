@@ -11,11 +11,11 @@ class Info:
         if self.get.lower() == 'name':
             return 'Simple Server'
         if self.get.lower() == 'about':
-            return 'Linux Version'
+            return ''
         if self.get.lower() == 'ver':
-            return '1.19.05'
+            return '1.200.05'
         if self.get.lower() == 'date':
-            return '19/10/2015'
+            return '19/06/2016'
         if self.get.lower() == 'by':
             return 'Xrobot'
         if self.get.lower() == 'mail':
