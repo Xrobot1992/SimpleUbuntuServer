@@ -6,6 +6,8 @@ see https://pypi.python.org/pypi/adblockparser/0.5 for more
 To use in Windows, ensure there is a working python2.7.x installation.
 
 Configuration Details:
+
+
         LHOST => Localhost Address to listen default is 127.0.0.1
         LPORT => Proxy Port to listen, default is 8080
         PHOST => Proxy Host address/ip
