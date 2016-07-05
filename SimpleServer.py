@@ -2,7 +2,7 @@
 import BaseHTTPServer
 import platform, random
 import select
-import socket, sys
+import socket, sys, logging
 import ServerPinger
 import ServerInfo
 import ServerConfig
@@ -34,14 +34,15 @@ def IsExec():
     elif sets.LOGS == 1:
         LogWindow(flag = True)
         print "Logging enabled\r\n"
-    
+    elif sets.LOGS == 2:
+        print "Logging to file: session.log\r\n"
+        
     return newname, toclose, stdtime, ihost, spacer 
     
 def UrlBlock():
     global rules
     if sets.ADBLOCKER == 1:
         rules = AdblockRules(file('hosts3.txt'))
-        
         sys.stdout.write("Adblocking is ON\r\n")
     elif sets.ADBLOCKER == 0:
         rules = AdblockRules([])
@@ -66,7 +67,7 @@ class QueryHandler():
         self.pport = pport
 
     def get_path(self, path):
-        no_path = None
+        
         if '/' in path:
             host, path = path.split('/', 1)
             path = '/%s' % path
@@ -75,7 +76,7 @@ class QueryHandler():
             path = '/'
             
         if rules.should_block(host) == True:
-            host, path = '%s' % no_path
+            host, path = 'upload.wikimedia.org', '/wikipedia/commons/c/ce/Transparent.gif'
         else:
             pass
             
@@ -618,6 +619,10 @@ class ProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def send_connection_logger(self, data):
         if logs:
             sys.stderr.write(data)
+        if sets.LOGS == 2:
+            LogWindow(flag = False)
+            logging.basicConfig(filename='session.log', format = '', level=logging.INFO, filemode = 'w')
+            logging.info(data.replace('\r\n', '\r'))
 
     def del_garbage(self):
         del self.https
