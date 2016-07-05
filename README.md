@@ -18,10 +18,10 @@ editor in /etc/apt/. Assuming you're using 'leafpad' then
 	$sudo leafpad /etc/apt/apt.conf 
 then copy the follwing to it, save and quit.
 
-Acquire::http::proxy "http://localhost:8080/";
-Acquire::https::proxy "https://localhost:8080/";
-Acquire::ftp::proxy "ftp://localhost:8080/";
-Acquire::socks::proxy "socks://localhost:8080/";
+	Acquire::http::proxy "http://localhost:8080/";
+	Acquire::https::proxy "https://localhost:8080/";
+	Acquire::ftp::proxy "ftp://localhost:8080/";
+	Acquire::socks::proxy "socks://localhost:8080/";
 
 ** You must remove this file when not using a proxy server otherwise 
 apt cannot reach the internet.
