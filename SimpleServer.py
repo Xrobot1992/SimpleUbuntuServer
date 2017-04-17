@@ -8,14 +8,15 @@ import ServerInfo
 import ServerConfig
 import ServerSocks
 import SocketServer
-import time 
-import urlparse
+import time
+import urlparse, urllib2
 from adblockparser import AdblockRules
 
 rules = AdblockRules([''])
 ra = lambda text: text.decode('ascii', 'ignore')
 sets = ServerConfig.Sets()
 logs = False
+adpath = []
 
 def ServerUpdate():
     global sets
@@ -36,13 +37,14 @@ def IsExec():
         print "Logging enabled\r\n"
     elif sets.LOGS == 2:
         print "Logging to file: session.log\r\n"
-        
-    return newname, toclose, stdtime, ihost, spacer 
+         
     
 def UrlBlock():
-    global rules
+    global rules, adpath
     if sets.ADBLOCKER == 1:
         rules = AdblockRules(file('hosts3.txt'))
+        adpath = ['zoneid=', 'auction_id=', 'campaign_id', 'offer?']
+        
         sys.stdout.write("Adblocking is ON\r\n")
     elif sets.ADBLOCKER == 0:
         rules = AdblockRules([])
@@ -50,7 +52,14 @@ def UrlBlock():
     else:
         print "Invalid value for Blocking, try 0 or 1, will use 0"
         sets.ADBLOCKER == 0
-
+        
+       
+def get_adpath(path):
+    if any([x in path for x in adpath]):
+        return True
+    else:
+        return False
+    
 
 def LogWindow(flag = False):
     global logs
@@ -65,22 +74,17 @@ class QueryHandler():
         self.https = https
         self.phost = phost
         self.pport = pport
-
-    def get_path(self, path):
         
+    def get_path(self, path):
         if '/' in path:
             host, path = path.split('/', 1)
             path = '/%s' % path
         else:
             host = path
             path = '/'
-            
-        if rules.should_block(host) == True:
-            host, path = 'upload.wikimedia.org', '/wikipedia/commons/c/ce/Transparent.gif'
-        else:
-            pass
-            
+
         fport = False
+
         if self.https:
             port = 443
         else:
@@ -93,7 +97,15 @@ class QueryHandler():
                 fport = True
             except:
                 pass
-
+            
+        if rules.should_block(host) or get_adpath(path) or '.' not in host:
+            host = '%s' % sets.LHOST
+            path = '/filter.gif'
+            port = sets.LPORT + 1
+            fport = True
+        else:
+            pass
+            
         return (fport,
          host,
          port,
@@ -640,7 +652,6 @@ class ProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         del self.puser
         del self.ppass
 
-
 class ThreadingHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
 
     def handle_error(self, request, client_address):
@@ -663,8 +674,8 @@ if __name__ == "__main__":
     proxy_service = HTTPProxyService()
     IsExec(), UrlBlock()
     try:
-        ServerPinger.Pinger().check()
         proxy_service.serve_forever()
+        ServerPinger.Pinger().check()
     except KeyboardInterrupt:
         proxy_service.server_close()
         print "\r", time.asctime(), "Server shutdown successfully"
