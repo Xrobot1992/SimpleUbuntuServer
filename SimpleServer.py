@@ -98,7 +98,7 @@ class QueryHandler():
             except:
                 pass
             
-        if rules.should_block(host) or get_adpath(path) or '.' not in host:
+        if rules.should_block(host) or get_adpath(path):
             host = '%s' % sets.LHOST
             path = '/filter.gif'
             port = sets.LPORT + 1
