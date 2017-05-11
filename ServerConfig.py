@@ -17,13 +17,13 @@ class Sets:
         self.RQUERY = ''
         self.CQUERY = ''
         self.IQUERY = ''
-        self.ADBLOCKER = 1
+        self.ADBLOCKER = 0
         self.IMETHOD = 1
         self.ILINE = 0
         self.ISPLIT = 5
         self.RPORT = 0
         self.RPATH = 0
-        self.ADMODE = 1
+        self.ADMODE = 0
         self.CUSHDR0 = ''
         self.VALHDR0 = ''
         self.CUSHDR1 = ''
@@ -35,7 +35,7 @@ class Sets:
         self.KEEP = ''
         self.RHTTP = 0
         self.RHTTPS = 1
-        self.SBUFF = 1024
+        self.SBUFF = 2048
         self.TIMEOUT = 60
         self.PHOST = ''
         self.PPORT = 0
